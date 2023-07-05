@@ -1,0 +1,77 @@
+const archivosHelper = require("./jsonHelper");
+const peliculas = archivosHelper.leerJson("peliculas")
+
+const gestionDePeliculas = {
+    peliculas: peliculas,
+    listarPeliculas: function (peliculas) {
+        peliculas.forEach(pelicula => {
+            let estado = pelicula.ganoOscar ? "Premiada" : "Sin Premios";
+            console.log(
+                "Titulo: " + pelicula.titulo
+                + ", Director: " + pelicula.director
+                + ", Duracion: " + pelicula.duracionEnMinutos + " Minutos"
+                + ", Calificacion: " + pelicula.calificacionIMDB + " /10 en IMDB"
+                + ", Premios: " + estado + "."
+            );
+        })
+    },
+    buscarPorId: function (id) {
+        return this.peliculas.find(pelicula => pelicula.id === id);
+    },
+    peliculasPremiadas: function() {
+        let peliculasPremiadas = peliculas;
+        return peliculasPremiadas.filter(pelicula => pelicula.ganoOscar === true);
+    },
+    filtarPorDuracion: function (tiempo1, tiempo2) {
+        let filtroPelisPorDuracion = peliculas;
+        return filtroPelisPorDuracion.filter(pelicula => pelicula.duracionEnMinutos <= tiempo1.duracionEnMinutos >= tiempo2.duracionEnMinutos);
+    },
+    ordenarPorCalificacion: function () {
+        return peliculas.sort((a, b) => a.calificacionIMDB - b.calificacionIMDB);
+    },
+    duracionTotal: function () {
+        return this.peliculas.reduce(
+            (acum, peliculas) => acum + peliculas.duracion,
+            0
+        );
+    },
+    premiarPeliculaPorTitulo: function (Titulo) {
+        this.peliculas.forEach(pelicula => {
+            pelicula.titulo = titulo;
+        })
+        jsonHelper.escribirJson("peliculas", this.peliculas)
+
+    }
+
+
+}
+
+// Invocaciones //
+
+
+console.log("\n\t\t********Listar Peliculas *********");
+gestionDePeliculas.listarPeliculas(gestionDePeliculas.peliculas);
+
+console.log("\n\t\t********Buscar Por Id*********");
+console.table(gestionDePeliculas.buscarPorId(4));
+
+console.log("\n\t\t********Peliculas Premiadas*********")
+gestionDePeliculas.listarPeliculas(gestionDePeliculas.peliculasPremiadas(true));
+
+console.log("\n\t\t********Peliculas Filtradas Por Duracion*********")
+const peliculasFiltradasPorDuracion = gestionDePeliculas.filtarPorDuracion(78, 115);
+console.log(peliculasFiltradasPorDuracion);
+
+console.log("\n\t\t ********Ordenar Por Calificacion*********");
+gestionDePeliculas.listarPeliculas(gestionDePeliculas.ordenarPorCalificacion());
+
+console.log("\n\t\t ********Duracion Total**************");
+gestionDePeliculas.peliculas(gestionDePeliculas.duracionTotal);
+
+
+
+
+
+
+
+

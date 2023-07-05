@@ -1,0 +1,89 @@
+const archivos = require(__dirname + "/lecturaEscritura");
+let JsonProfesionales = archivos.leerJson("profesionales");
+
+//objeto literal con props y métodos
+const cartillaProfs = {
+  profesionales: JsonProfesionales,
+  //NO modificar esto
+  mostrarUnProfesional: function (profesional) {
+    console.table({
+      [profesional.identificador]: {
+        nombre: profesional.nombre,
+        especialidad: profesional.especialidad,
+        honorarios: profesional.honorarioConsulta,
+        consultas: profesional.cantidadConsultas,
+        habilitado: profesional.estaHabilitado,
+      },
+    });
+  },
+  listarTodos: function (profesionalesAMostrar) {
+    let vista = [];
+    for (let i = 0; i < profesionalesAMostrar.length; i++) {
+      vista.push(this.traerUnProfesional(profesionalesAMostrar[i]));
+    }
+    console.table(vista);
+  },
+  traerUnProfesional: function (profesional) {
+    return {
+      nombre: profesional.nombre,
+      honorarios: "$" + profesional.honorarioConsulta,
+      especialidad: profesional.especialidad,
+      habilitado: profesional.estaHabilitado,
+    };
+  },
+  //fin de NO modificar
+
+  //tu código a partir de aquí...
+  //...
+  filtrarHabilitados: function (habilitado) {
+    let habilitados = [];
+    for (let i = 0; i < this.profesionales.length; i++) {
+      if (this.profesionales[i].estaHabilitado === habilitado) {
+        habilitados.push(this.profesionales[i]);
+      }
+    }
+    return habilitados;
+  },
+  buscarPorNombre: function (nombre) {
+    for (let i = 0; i < this.profesionales.length; i++) {
+      if (this.profesionales[i].nombre === nombre) {
+        return this.profesionales[i]; //evitamos seguir buscando si ya lo encontramos
+      }
+    }
+    return {}; //en caso de no existir devuelve obj vacío (deve devolver del mismo tipo, no string)
+  },
+  incrementarHonorarios: function (nombre, porcentaje) {
+    let profesional = this.buscarPorNombre(nombre);
+    let nuevoHonorarios = (profesional.honorarioConsulta * porcentaje) / 100;
+
+    profesional.honorarioConsulta += nuevoHonorarios;//al modificar un miembro del array,
+    // no hace falta actualizar, ya se modifica dentro del array
+    archivos.escribirJson("profesionales", this.profesionales);
+    return profesional;
+  }
+};
+
+console.log("\n****** mostrar todos los profesionales *****");
+cartillaProfs.listarTodos(JsonProfesionales);
+
+console.log("\n****** punto 1 ¿cuál es la única propiedad del objeto literal? *****");
+// responda aquí: profesionales
+
+console.log("\n****** punto 2 ¿cómo se denomina a las funciones dentro de un obj literal? *****");
+// responda aquí: métodos
+
+console.log("\n****** punto 3 mostrar un profesional *****");
+const profesional = cartillaProfs.profesionales[6];// un profesional del array a partir de un índice cualquiera
+cartillaProfs.mostrarUnProfesional(profesional);
+
+console.log("\n****** punto 4 Listar habilitados ******");
+const habilitados = cartillaProfs.filtrarHabilitados(true);
+cartillaProfs.listarTodos(habilitados);
+
+console.log("\n****** punto 5 Buscar por nombre ******");
+const profesionalPorNombre = cartillaProfs.buscarPorNombre("Guerra Bright");
+cartillaProfs.mostrarUnProfesional(profesionalPorNombre);
+
+console.log("\n****** punto 6 Incrementar Honorarios ******");
+const profesionalIncremento = cartillaProfs.incrementarHonorarios("Stafford Watts", 20);
+cartillaProfs.mostrarUnProfesional(profesionalIncremento);
